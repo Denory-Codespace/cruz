@@ -1,0 +1,31 @@
+{
+  "name": "cruz",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Modern ride-hailing & mobility platform",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:marketing": "npm run dev --workspace=apps/marketing-web",
+    "dev:passenger": "npm run dev --workspace=apps/passenger-web",
+    "dev:driver": "npm run dev --workspace=apps/driver-web",
+    "dev:admin": "npm run dev --workspace=apps/admin-web",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "keywords": [
+    "ride-hailing",
+    "mobility",
+    "cruz",
+    "kenya",
+    "supabase",
+    "nextjs",
+    "expo"
+  ],
+  "author": "Cruz Engineering",
+  "license": "UNLICENSED"
+}
