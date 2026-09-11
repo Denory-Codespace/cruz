@@ -7,9 +7,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@cruz/types": "workspace:*",
-    "@cruz/config": "workspace:*",
-    "@cruz/utils": "workspace:*",
+    "@cruz/types": "*",
+    "@cruz/config": "*",
+    "@cruz/utils": "*",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

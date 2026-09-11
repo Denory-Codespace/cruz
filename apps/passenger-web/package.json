@@ -9,12 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@cruz/api-client": "workspace:*",
-    "@cruz/config": "workspace:*",
-    "@cruz/types": "workspace:*",
-    "@cruz/ui": "workspace:*",
-    "@cruz/utils": "workspace:*",
-    "@cruz/validation": "workspace:*",
+    "@cruz/api-client": "*",
+    "@cruz/config": "*",
+    "@cruz/types": "*",
+    "@cruz/ui": "*",
+    "@cruz/utils": "*",
+    "@cruz/validation": "*",
     "next": "^14.2.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

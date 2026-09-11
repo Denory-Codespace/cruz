@@ -7,8 +7,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@cruz/types": "workspace:*",
-    "@cruz/config": "workspace:*"
+    "@cruz/types": "*",
+    "@cruz/config": "*"
   },
   "devDependencies": {
     "typescript": "^5.4.0"

@@ -7,10 +7,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@cruz/types": "workspace:*",
-    "@cruz/config": "workspace:*",
-    "@cruz/utils": "workspace:*",
-    "@cruz/validation": "workspace:*",
+    "@cruz/types": "*",
+    "@cruz/config": "*",
+    "@cruz/utils": "*",
+    "@cruz/validation": "*",
     "@supabase/supabase-js": "^2.43.0"
   },
   "devDependencies": {
