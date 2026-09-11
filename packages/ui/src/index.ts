@@ -6,3 +6,4 @@ export * from './components/Modal';
 export * from './components/FareCard';
 export * from './components/DriverCard';
 export * from './components/Navbar';
+export * from './components/CruzMap';

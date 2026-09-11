@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import type { LocationPoint, RideRequest, VehicleCategory } from '@cruz/types';
 import { NAIROBI_PRESET_LOCATIONS } from '@cruz/config';
-import { Navbar, Button, Card, Badge, FareCard, DriverCard, Modal } from '@cruz/ui';
+import { Navbar, Button, Card, Badge, FareCard, DriverCard, Modal, CruzMap } from '@cruz/ui';
 import { tripService, mockStore } from '@cruz/api-client';
 
 export default function PassengerApp() {
@@ -23,7 +23,7 @@ export default function PassengerApp() {
   // Fare quote
   const quote = tripService.estimateFare(pickup, destination, category);
 
-  // Sync with cross-tab mock store
+  // Sync with reactive cross-tab mock store
   const syncState = () => {
     const state = mockStore.getState();
     if (activeTrip) {
@@ -35,7 +35,6 @@ export default function PassengerApp() {
         }
       }
     } else {
-      // Check if there is an existing ongoing trip for this passenger
       const ongoing = state.trips.find(
         (t) => t.passenger_id === 'usr-passenger-1' && t.status !== 'TRIP_COMPLETED' && t.status !== 'CANCELLED'
       );
@@ -105,23 +104,38 @@ export default function PassengerApp() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar
-        appName="Passenger"
+        appName="Passenger Web"
         userName="David Kamau"
         userRole="PASSENGER"
         actions={
           <div style={{ display: 'flex', gap: '8px' }}>
-            <a href="http://localhost:3002" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
-              <Button variant="secondary" size="sm">Open Driver App</Button>
+            <a href="http://localhost:3000" style={{ textDecoration: 'none' }}>
+              <Button variant="outline" size="sm">Studio Demo</Button>
             </a>
-            <a href="http://localhost:3003" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
-              <Button variant="outline" size="sm">Open Live Ops</Button>
+            <a href="http://localhost:3002" style={{ textDecoration: 'none' }}>
+              <Button variant="secondary" size="sm">Driver App</Button>
+            </a>
+            <a href="http://localhost:3003" style={{ textDecoration: 'none' }}>
+              <Button variant="outline" size="sm">Live Ops</Button>
             </a>
           </div>
         }
       />
 
       <main style={{ flex: 1, padding: '24px 16px', maxWidth: '580px', margin: '0 auto', width: '100%' }}>
-        {/* No active trip: Request Form */}
+        {/* Interactive Map View */}
+        <div style={{ marginBottom: '20px' }}>
+          <CruzMap
+            pickup={pickup}
+            destination={destination}
+            driverLocation={activeTrip?.status === 'DRIVER_ARRIVING' || activeTrip?.status === 'TRIP_STARTED' ? { lat: (pickup.lat + destination.lat) / 2, lng: (pickup.lng + destination.lng) / 2 } : undefined}
+            pickupLabel={pickup.address.split(',')[0]}
+            destinationLabel={destination.address.split(',')[0]}
+            height="220px"
+          />
+        </div>
+
+        {/* No active trip: Booking Controls */}
         {!activeTrip && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div>
@@ -129,7 +143,7 @@ export default function PassengerApp() {
                 Where to today?
               </h1>
               <p style={{ color: '#64748B', fontSize: '14px', marginTop: '4px' }}>
-                Choose your pickup and destination in Nairobi.
+                Select your pickup and drop-off destinations in Nairobi.
               </p>
             </div>
 
@@ -267,7 +281,7 @@ export default function PassengerApp() {
                     />
                     <strong style={{ fontSize: '16px', color: '#0F172A' }}>Finding nearby drivers...</strong>
                     <p style={{ fontSize: '13px', color: '#64748B', marginTop: '4px' }}>
-                      Dispatch offer sent to online drivers! Open the Driver App tab to accept.
+                      Dispatch offer sent to online drivers in Nairobi!
                     </p>
                   </div>
                 )}

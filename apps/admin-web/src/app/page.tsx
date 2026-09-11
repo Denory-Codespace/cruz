@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Navbar, Button, Card, Badge } from '@cruz/ui';
+import { Navbar, Button, Card, Badge, CruzMap } from '@cruz/ui';
 import { formatKes, formatDateTime } from '@cruz/utils';
 import { adminService, mockStore } from '@cruz/api-client';
 
@@ -36,11 +36,14 @@ export default function AdminPortal() {
         userRole="SUPER ADMIN"
         actions={
           <div style={{ display: 'flex', gap: '8px' }}>
-            <a href="http://localhost:3001" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
-              <Button variant="outline" size="sm">Passenger App</Button>
+            <a href="http://localhost:3000" style={{ textDecoration: 'none' }}>
+              <Button variant="outline" size="sm">Studio Demo</Button>
             </a>
-            <a href="http://localhost:3002" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
-              <Button variant="secondary" size="sm">Driver App</Button>
+            <a href="http://localhost:3001" style={{ textDecoration: 'none' }}>
+              <Button variant="secondary" size="sm">Passenger App</Button>
+            </a>
+            <a href="http://localhost:3002" style={{ textDecoration: 'none' }}>
+              <Button variant="outline" size="sm">Driver App</Button>
             </a>
           </div>
         }
@@ -53,7 +56,7 @@ export default function AdminPortal() {
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
             gap: '16px',
-            marginBottom: '28px',
+            marginBottom: '24px',
           }}
         >
           <Card variant="elevated" padding="md">
@@ -83,6 +86,18 @@ export default function AdminPortal() {
               {formatKes(metrics.platformCommissionKes)}
             </h2>
           </Card>
+        </div>
+
+        {/* Live Operations Map */}
+        <div style={{ marginBottom: '24px' }}>
+          <CruzMap
+            pickup={{ lat: -1.2618, lng: 36.8044 }}
+            destination={{ lat: -1.2864, lng: 36.8172 }}
+            driverLocation={{ lat: -1.2683, lng: 36.8111 }}
+            pickupLabel="Westlands Hub"
+            destinationLabel="CBD Hub"
+            height="260px"
+          />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))', gap: '24px' }}>
