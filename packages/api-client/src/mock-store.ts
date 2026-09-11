@@ -1,5 +1,5 @@
 // ==============================================================================
-// CRUZ — REACTIVE IN-MEMORY STORE FOR SIMULATION & FAST LOCAL TESTING
+// CRUZ — REACTIVE CROSS-TAB STORE FOR SIMULATION & LOCAL TESTING
 // ==============================================================================
 
 import type {
@@ -26,6 +26,9 @@ export interface PlatformState {
   ratings: Rating[];
 }
 
+const STORAGE_KEY = 'cruz_platform_state_v1';
+const BROADCAST_CHANNEL_NAME = 'cruz_sync_channel';
+
 const INITIAL_STATE: PlatformState = {
   users: [
     {
@@ -34,8 +37,8 @@ const INITIAL_STATE: PlatformState = {
       full_name: 'David Kamau',
       phone_number: '+254712345678',
       is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      created_at: '2026-09-11T20:00:00.000Z',
+      updated_at: '2026-09-11T20:00:00.000Z',
     },
     {
       id: 'usr-driver-1',
@@ -43,8 +46,8 @@ const INITIAL_STATE: PlatformState = {
       full_name: 'Samuel Mwangi',
       phone_number: '+254722334455',
       is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      created_at: '2026-09-11T20:00:00.000Z',
+      updated_at: '2026-09-11T20:00:00.000Z',
     },
     {
       id: 'usr-driver-2',
@@ -52,17 +55,17 @@ const INITIAL_STATE: PlatformState = {
       full_name: 'Brian Omondi',
       phone_number: '+254733445566',
       is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      created_at: '2026-09-11T20:00:00.000Z',
+      updated_at: '2026-09-11T20:00:00.000Z',
     },
     {
       id: 'usr-admin-1',
       role: 'ADMIN',
       full_name: 'Denzel',
-      phone_number: '+254700000000',
+      phone_number: '+254714082283',
       is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      created_at: '2026-09-11T20:00:00.000Z',
+      updated_at: '2026-09-11T20:00:00.000Z',
     },
   ],
   drivers: [
@@ -77,8 +80,8 @@ const INITIAL_STATE: PlatformState = {
       rating_count: 52,
       national_id_number: '12345678',
       driving_license_number: 'DL-987654',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      created_at: '2026-09-11T20:00:00.000Z',
+      updated_at: '2026-09-11T20:00:00.000Z',
     },
     {
       id: 'usr-driver-2',
@@ -91,8 +94,8 @@ const INITIAL_STATE: PlatformState = {
       rating_count: 38,
       national_id_number: '23456789',
       driving_license_number: 'DL-876543',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      created_at: '2026-09-11T20:00:00.000Z',
+      updated_at: '2026-09-11T20:00:00.000Z',
     },
   ],
   vehicles: [
@@ -106,7 +109,7 @@ const INITIAL_STATE: PlatformState = {
       license_plate: 'KDA 123X',
       category: 'STANDARD',
       is_active: true,
-      created_at: new Date().toISOString(),
+      created_at: '2026-09-11T20:00:00.000Z',
     },
     {
       id: 'veh-2',
@@ -118,7 +121,7 @@ const INITIAL_STATE: PlatformState = {
       license_plate: 'KDB 456Y',
       category: 'STANDARD',
       is_active: true,
-      created_at: new Date().toISOString(),
+      created_at: '2026-09-11T20:00:00.000Z',
     },
   ],
   trips: [],
@@ -129,14 +132,14 @@ const INITIAL_STATE: PlatformState = {
       user_id: 'usr-driver-1',
       balance_kes: 3450,
       currency: 'KES',
-      updated_at: new Date().toISOString(),
+      updated_at: '2026-09-11T20:00:00.000Z',
     },
     {
       id: 'wal-2',
       user_id: 'usr-driver-2',
       balance_kes: 1280,
       currency: 'KES',
-      updated_at: new Date().toISOString(),
+      updated_at: '2026-09-11T20:00:00.000Z',
     },
   ],
   transactions: [
@@ -146,7 +149,7 @@ const INITIAL_STATE: PlatformState = {
       type: 'TRIP_EARNING',
       amount_kes: 420,
       status: 'SUCCESS',
-      created_at: new Date(Date.now() - 3600000).toISOString(),
+      created_at: '2026-09-11T19:00:00.000Z',
     },
   ],
   ratings: [],
@@ -155,9 +158,63 @@ const INITIAL_STATE: PlatformState = {
 class CruzMockStore {
   private state: PlatformState;
   private listeners: Set<(state: PlatformState) => void> = new Set();
+  private channel: BroadcastChannel | null = null;
 
   constructor() {
-    this.state = JSON.parse(JSON.stringify(INITIAL_STATE));
+    this.state = this.loadState();
+    this.initCrossTabSync();
+  }
+
+  private loadState(): PlatformState {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        const saved = window.localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          return JSON.parse(saved);
+        }
+      } catch (e) {
+        console.warn('Failed to load state from localStorage:', e);
+      }
+    }
+    return JSON.parse(JSON.stringify(INITIAL_STATE));
+  }
+
+  private saveState() {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+      } catch (e) {
+        console.warn('Failed to save state to localStorage:', e);
+      }
+    }
+  }
+
+  private initCrossTabSync() {
+    if (typeof window !== 'undefined') {
+      try {
+        if ('BroadcastChannel' in window) {
+          this.channel = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
+          this.channel.onmessage = (event) => {
+            if (event.data && event.data.state) {
+              this.state = event.data.state;
+              this.notifyLocal();
+            }
+          };
+        }
+
+        // Storage event fallback
+        window.addEventListener('storage', (e) => {
+          if (e.key === STORAGE_KEY && e.newValue) {
+            try {
+              this.state = JSON.parse(e.newValue);
+              this.notifyLocal();
+            } catch {}
+          }
+        });
+      } catch (e) {
+        console.warn('Cross-tab broadcast channel not supported in this environment');
+      }
+    }
   }
 
   getState(): PlatformState {
@@ -169,8 +226,25 @@ class CruzMockStore {
     return () => this.listeners.delete(listener);
   }
 
-  private notify() {
+  private notifyLocal() {
     this.listeners.forEach((listener) => listener(this.state));
+  }
+
+  private notify() {
+    this.saveState();
+    this.notifyLocal();
+    if (this.channel) {
+      try {
+        this.channel.postMessage({ state: this.state });
+      } catch (e) {
+        console.warn('Failed to broadcast state:', e);
+      }
+    }
+  }
+
+  reset() {
+    this.state = JSON.parse(JSON.stringify(INITIAL_STATE));
+    this.notify();
   }
 
   // --- Passenger actions ---
@@ -218,10 +292,10 @@ class CruzMockStore {
         trip,
         driver_id: availableDriver.id,
         status: 'OFFERED',
-        expires_at: new Date(Date.now() + 30000).toISOString(),
+        expires_at: new Date(Date.now() + 60000).toISOString(),
         created_at: new Date().toISOString(),
       };
-      this.state.dispatches.push(dispatch);
+      this.state.dispatches.unshift(dispatch);
     }
 
     this.notify();
@@ -324,6 +398,15 @@ class CruzMockStore {
         });
 
         // Set driver back online and available
+        const driver = this.state.drivers.find((d) => d.id === trip.driver_id);
+        if (driver) {
+          driver.status = 'ONLINE';
+          driver.is_available = true;
+        }
+      }
+    } else if (nextStatus === 'CANCELLED') {
+      // If trip cancelled, free the driver
+      if (trip.driver_id) {
         const driver = this.state.drivers.find((d) => d.id === trip.driver_id);
         if (driver) {
           driver.status = 'ONLINE';

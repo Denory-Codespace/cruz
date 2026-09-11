@@ -8,12 +8,13 @@ import { driverService, mockStore } from '@cruz/api-client';
 
 export default function DriverApp() {
   const driverId = 'usr-driver-1';
+  const [mounted, setMounted] = useState(false);
   const [driver, setDriver] = useState<Driver | null>(null);
   const [activeTrip, setActiveTrip] = useState<RideRequest | null>(null);
   const [incomingDispatch, setIncomingDispatch] = useState<DriverDispatch | null>(null);
   const [walletData, setWalletData] = useState(driverService.getDriverWallet(driverId));
 
-  // Sync with mock store
+  // Sync with cross-tab mock store
   const syncState = () => {
     const state = mockStore.getState();
     const d = state.drivers.find((item) => item.id === driverId);
@@ -31,6 +32,7 @@ export default function DriverApp() {
   };
 
   useEffect(() => {
+    setMounted(true);
     syncState();
     const unsubscribe = mockStore.subscribe(syncState);
     return unsubscribe;
@@ -68,6 +70,14 @@ export default function DriverApp() {
     }
   };
 
+  if (!mounted) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: '#2563EB', fontWeight: 700 }}>Loading Cruz Driver Console...</div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar
@@ -76,11 +86,11 @@ export default function DriverApp() {
         userRole="APPROVED DRIVER"
         actions={
           <div style={{ display: 'flex', gap: '8px' }}>
-            <a href="http://localhost:3001" style={{ textDecoration: 'none' }}>
-              <Button variant="outline" size="sm">Passenger App</Button>
+            <a href="http://localhost:3001" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
+              <Button variant="outline" size="sm">Open Passenger App</Button>
             </a>
-            <a href="http://localhost:3003" style={{ textDecoration: 'none' }}>
-              <Button variant="secondary" size="sm">Live Ops</Button>
+            <a href="http://localhost:3003" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
+              <Button variant="secondary" size="sm">Open Live Ops</Button>
             </a>
           </div>
         }
@@ -240,7 +250,7 @@ export default function DriverApp() {
                       <strong style={{ color: '#0F172A', display: 'block' }}>
                         {tx.type.replace('_', ' ')}
                       </strong>
-                      <span style={{ color: '#94A3B8', fontSize: '11px' }}>
+                      <span suppressHydrationWarning style={{ color: '#94A3B8', fontSize: '11px' }}>
                         {formatDateTime(tx.created_at)}
                       </span>
                     </div>
@@ -283,7 +293,7 @@ export default function DriverApp() {
                 fontWeight: 600,
               }}
             >
-              ⏱️ Dispatch offer expires in 30 seconds
+              ⏱️ Dispatch offer expires in 60 seconds
             </div>
 
             <div>

@@ -6,6 +6,7 @@ import { formatKes, formatDateTime } from '@cruz/utils';
 import { adminService, mockStore } from '@cruz/api-client';
 
 export default function AdminPortal() {
+  const [mounted, setMounted] = useState(false);
   const [metrics, setMetrics] = useState(adminService.getOperationalMetrics());
 
   const refresh = () => {
@@ -13,9 +14,19 @@ export default function AdminPortal() {
   };
 
   useEffect(() => {
+    setMounted(true);
+    refresh();
     const unsubscribe = mockStore.subscribe(refresh);
     return unsubscribe;
   }, []);
+
+  if (!mounted) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: '#2563EB', fontWeight: 700 }}>Loading Live Ops Portal...</div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#F8FAFC' }}>
@@ -25,10 +36,10 @@ export default function AdminPortal() {
         userRole="SUPER ADMIN"
         actions={
           <div style={{ display: 'flex', gap: '8px' }}>
-            <a href="http://localhost:3001" style={{ textDecoration: 'none' }}>
+            <a href="http://localhost:3001" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
               <Button variant="outline" size="sm">Passenger App</Button>
             </a>
-            <a href="http://localhost:3002" style={{ textDecoration: 'none' }}>
+            <a href="http://localhost:3002" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
               <Button variant="secondary" size="sm">Driver App</Button>
             </a>
           </div>
@@ -107,7 +118,7 @@ export default function AdminPortal() {
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                         <Badge status={trip.status} size="sm" />
-                        <span style={{ color: '#64748B' }}>{formatDateTime(trip.created_at)}</span>
+                        <span suppressHydrationWarning style={{ color: '#64748B' }}>{formatDateTime(trip.created_at)}</span>
                       </div>
                       <div style={{ color: '#0F172A', fontWeight: 600 }}>
                         {trip.pickup_address.split(',')[0]} → {trip.destination_address.split(',')[0]}

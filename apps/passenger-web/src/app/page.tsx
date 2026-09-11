@@ -7,6 +7,7 @@ import { Navbar, Button, Card, Badge, FareCard, DriverCard, Modal } from '@cruz/
 import { tripService, mockStore } from '@cruz/api-client';
 
 export default function PassengerApp() {
+  const [mounted, setMounted] = useState(false);
   const [pickup, setPickup] = useState<LocationPoint>(NAIROBI_PRESET_LOCATIONS[0]);
   const [destination, setDestination] = useState<LocationPoint>(NAIROBI_PRESET_LOCATIONS[1]);
   const [category, setCategory] = useState<VehicleCategory>('STANDARD');
@@ -22,21 +23,34 @@ export default function PassengerApp() {
   // Fare quote
   const quote = tripService.estimateFare(pickup, destination, category);
 
-  // Subscribe to mock store updates
-  useEffect(() => {
-    const unsubscribe = mockStore.subscribe((state) => {
-      if (activeTrip) {
-        const updated = state.trips.find((t) => t.id === activeTrip.id);
-        if (updated) {
-          setActiveTrip({ ...updated });
-          if (updated.status === 'TRIP_COMPLETED' && !ratingSubmitted) {
-            setShowRatingModal(true);
-          }
+  // Sync with cross-tab mock store
+  const syncState = () => {
+    const state = mockStore.getState();
+    if (activeTrip) {
+      const updated = state.trips.find((t) => t.id === activeTrip.id);
+      if (updated) {
+        setActiveTrip({ ...updated });
+        if (updated.status === 'TRIP_COMPLETED' && !ratingSubmitted) {
+          setShowRatingModal(true);
         }
       }
-    });
+    } else {
+      // Check if there is an existing ongoing trip for this passenger
+      const ongoing = state.trips.find(
+        (t) => t.passenger_id === 'usr-passenger-1' && t.status !== 'TRIP_COMPLETED' && t.status !== 'CANCELLED'
+      );
+      if (ongoing) {
+        setActiveTrip({ ...ongoing });
+      }
+    }
+  };
+
+  useEffect(() => {
+    setMounted(true);
+    syncState();
+    const unsubscribe = mockStore.subscribe(syncState);
     return unsubscribe;
-  }, [activeTrip, ratingSubmitted]);
+  }, [activeTrip?.id, ratingSubmitted]);
 
   const handleRequestRide = async () => {
     setIsRequesting(true);
@@ -80,6 +94,14 @@ export default function PassengerApp() {
     }
   };
 
+  if (!mounted) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: '#2563EB', fontWeight: 700 }}>Loading Cruz Passenger App...</div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar
@@ -88,11 +110,11 @@ export default function PassengerApp() {
         userRole="PASSENGER"
         actions={
           <div style={{ display: 'flex', gap: '8px' }}>
-            <a href="http://localhost:3002" style={{ textDecoration: 'none' }}>
-              <Button variant="secondary" size="sm">Switch to Driver App</Button>
+            <a href="http://localhost:3002" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
+              <Button variant="secondary" size="sm">Open Driver App</Button>
             </a>
-            <a href="http://localhost:3003" style={{ textDecoration: 'none' }}>
-              <Button variant="outline" size="sm">Live Ops</Button>
+            <a href="http://localhost:3003" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
+              <Button variant="outline" size="sm">Open Live Ops</Button>
             </a>
           </div>
         }
@@ -245,20 +267,20 @@ export default function PassengerApp() {
                     />
                     <strong style={{ fontSize: '16px', color: '#0F172A' }}>Finding nearby drivers...</strong>
                     <p style={{ fontSize: '13px', color: '#64748B', marginTop: '4px' }}>
-                      Dispatching to online drivers in Nairobi. Open the Driver App to accept!
+                      Dispatch offer sent to online drivers! Open the Driver App tab to accept.
                     </p>
                   </div>
                 )}
 
                 {activeTrip.status === 'DRIVER_ASSIGNED' && (
                   <div style={{ color: '#1D4ED8', fontWeight: 600 }}>
-                    ✓ Driver assigned! Driver is heading towards pickup.
+                    ✓ Driver assigned! Driver is preparing to head to pickup.
                   </div>
                 )}
 
                 {activeTrip.status === 'DRIVER_ARRIVING' && (
                   <div style={{ color: '#1D4ED8', fontWeight: 600 }}>
-                    🚗 Driver is arriving at your pickup location.
+                    🚗 Driver is en route to your pickup location.
                   </div>
                 )}
 
