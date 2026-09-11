@@ -1,0 +1,70 @@
+/* ==============================================================================
+   CRUZ DESIGN SYSTEM — TOKENS & BASE STYLES
+   Brand Colors: Light Blue (#DCEEFF), Light Yellow (#FFF1B8), Light Green (#DDF5E3)
+   ============================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Brand Tokens */
+  --cruz-blue-50: #F2F8FF;
+  --cruz-blue-100: #DCEEFF;
+  --cruz-blue-200: #B8DBFF;
+  --cruz-blue-500: #2563EB;
+  --cruz-blue-600: #1D4ED8;
+  --cruz-blue-700: #1E40AF;
+
+  --cruz-yellow-50: #FFFDF0;
+  --cruz-yellow-100: #FFF1B8;
+  --cruz-yellow-200: #FEE380;
+  --cruz-yellow-500: #D97706;
+  --cruz-yellow-600: #B45309;
+
+  --cruz-green-50: #F2FBF5;
+  --cruz-green-100: #DDF5E3;
+  --cruz-green-200: #B9ECC5;
+  --cruz-green-500: #16A34A;
+  --cruz-green-600: #15803D;
+
+  /* Neutrals & Surfaces */
+  --cruz-bg: #F8FAFC;
+  --cruz-surface: #FFFFFF;
+  --cruz-surface-subtle: #F1F5F9;
+  --cruz-text-primary: #0F172A;
+  --cruz-text-secondary: #475569;
+  --cruz-text-muted: #94A3B8;
+  --cruz-border: #E2E8F0;
+  --cruz-border-hover: #CBD5E1;
+  --cruz-danger: #EF4444;
+  --cruz-danger-bg: #FEF2F2;
+
+  /* Typography */
+  --cruz-font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Border Radii */
+  --cruz-radius-xs: 4px;
+  --cruz-radius-sm: 8px;
+  --cruz-radius-md: 12px;
+  --cruz-radius-lg: 20px;
+  --cruz-radius-full: 9999px;
+
+  /* Elevation Shadows */
+  --cruz-shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --cruz-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --cruz-shadow-lg: 0 10px 25px -3px rgba(15, 23, 42, 0.1);
+  --cruz-shadow-card: 0 2px 8px rgba(15, 23, 42, 0.04), 0 0 1px rgba(15, 23, 42, 0.1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--cruz-font-sans);
+  background-color: var(--cruz-bg);
+  color: var(--cruz-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

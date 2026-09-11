@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "baseUrl": ".",
+    "paths": {
+      "@cruz/types": ["./packages/types/src/index.ts"],
+      "@cruz/types/*": ["./packages/types/src/*"],
+      "@cruz/config": ["./packages/config/src/index.ts"],
+      "@cruz/config/*": ["./packages/config/src/*"],
+      "@cruz/utils": ["./packages/utils/src/index.ts"],
+      "@cruz/utils/*": ["./packages/utils/src/*"],
+      "@cruz/validation": ["./packages/validation/src/index.ts"],
+      "@cruz/validation/*": ["./packages/validation/src/*"],
+      "@cruz/ui": ["./packages/ui/src/index.ts"],
+      "@cruz/ui/*": ["./packages/ui/src/*"],
+      "@cruz/api-client": ["./packages/api-client/src/index.ts"],
+      "@cruz/api-client/*": ["./packages/api-client/src/*"]
+    },
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  }
+}

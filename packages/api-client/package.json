@@ -1,0 +1,19 @@
+{
+  "name": "@cruz/api-client",
+  "version": "0.1.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@cruz/types": "workspace:*",
+    "@cruz/config": "workspace:*",
+    "@cruz/utils": "workspace:*",
+    "@cruz/validation": "workspace:*",
+    "@supabase/supabase-js": "^2.43.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}
